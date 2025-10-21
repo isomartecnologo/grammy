@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>🏆 Ranking - Grammy 2025</title>
+  <style>
+    :root {
+      --bg-primary: linear-gradient(135deg, #0c1a3e, #1a2d64);
+      --text-color: #fff;
+      --gold: gold;
+      --silver: silver;
+      --bronze: #cd7f32;
+      --glow: rgba(255, 215, 0, 0.8);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Arial', sans-serif;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+      background-size: 20px 20px;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    body {
+      background: var(--bg-primary);
+      min-height: 100vh;
+      color: white;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1000px;
+      margin: 50px auto;
+      padding: 30px;
+      background: rgba(10, 15, 50, 0.9);
+      border: 3px solid var(--gold);
+      border-radius: 20px;
+      box-shadow: 0 0 30px var(--glow);
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--gold);
+      text-shadow: 0 0 15px var(--glow);
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+
+    p.subtitulo {
+      text-align: center;
+      color: #ccc;
+      margin-bottom: 30px;
+    }
+
+    .btn-voltar {
+      display: inline-block;
+      background: #666;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 1em;
+      margin-bottom: 20px;
+    }
+
+    /* Animações */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes shine {
+      0% { text-shadow: 0 0 10px var(--glow); }
+      50% { text-shadow: 0 0 20px var(--glow), 0 0 30px var(--glow); }
+      100% { text-shadow: 0 0 10px var(--glow); }
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 1.1rem;
+    }
+
+    th {
+      background: rgba(0, 191, 255, 0.3);
+      color: var(--gold);
+      padding: 14px;
+      text-align: left;
+      border-bottom: 2px solid var(--gold);
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .posicao {
+      font-weight: bold;
+      font-size: 1.3em;
+    }
+
+    .nome {
+      font-size: 1.1em;
+    }
+
+    .pontuacao {
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+
+    .primeiro {
+      border-left: 5px solid var(--gold);
+      animation: shine 2s infinite;
+    }
+
+    .primeiro .posicao,
+    .primeiro .pontuacao {
+      color: var(--gold);
+    }
+
+    .segundo {
+      border-left: 3px solid var(--silver);
+      animation: pulse 1.5s infinite;
+    }
+
+    .segundo .posicao,
+    .segundo .pontuacao {
+      color: var(--silver);
+    }
+
+    .terceiro {
+      border-left: 3px solid var(--bronze);
+      animation: pulse 2s infinite;
+    }
+
+    .terceiro .posicao,
+    .terceiro .pontuacao {
+      color: var(--bronze);
+    }
+
+    .trophy {
+      font-size: 1.4em;
+      margin-right: 8px;
+    }
+
+    .loading {
+      text-align: center;
+      color: #aaa;
+      font-style: italic;
+      padding: 40px;
+    }
+
+    .atualizacao {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🏆 RANKING GERAL</h1>
+    <p class="subtitulo">Baseado na pontuação total acumulada de todas as avaliações</p>
+
+    <a href="gerente.html" class="btn-voltar">← Voltar ao Painel</a>
+
+    <table id="tabelaRanking">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Apresentação</th>
+          <th>Pontuação Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="3" class="loading">Carregando ranking...</td></tr>
+      </tbody>
+    </table>
+
+    <p class="atualizacao" id="atualizacao">Última atualização: Carregando...</p>
+  </div>
+
+  <script>
+    function formatar(ponto) {
+      return parseFloat(ponto || 0).toFixed(1);
+    }
+
+    function atualizarHora() {
+      const now = new Date();
+      document.getElementById("atualizacao").textContent = 
+        "Última atualização: " + now.toLocaleString();
+    }
+
+    async function carregarRanking() {
+      try {
+        const response = await fetch('api.php?acao=listar_apresentacoes');
+        const apresentacoes = await response.json();
+
+        if (apresentacoes.length === 0) {
+          document.querySelector('#tabelaRanking tbody').innerHTML = 
+            '<tr><td colspan="3" style="text-align:center;padding:40px;">Nenhuma apresentação cadastrada.</td></tr>';
+          return;
+        }
+
+        // Ordenar por pontuação total (maior primeiro)
+        const ranking = apresentacoes
+          .map(ap => ({
+            titulo: ap.titulo,
+            pontuacao: parseFloat(ap.pontuacao_total) || 0
+          }))
+          .sort((a, b) => b.pontuacao - a.pontuacao);
+
+        const tbody = document.querySelector('#tabelaRanking tbody');
+        tbody.innerHTML = '';
+
+        ranking.forEach((item, index) => {
+          const posicao = index + 1;
+          let classe = '';
+          let trofeu = '';
+
+          if (index === 0) {
+            classe = 'primeiro';
+            trofeu = '🥇';
+          } else if (index === 1) {
+            classe = 'segundo';
+            trofeu = '🥈';
+          } else if (index === 2) {
+            classe = 'terceiro';
+            trofeu = '🥉';
+          }
+
+          const tr = document.createElement('tr');
+          tr.className = classe;
+
+          tr.innerHTML = `
+            <td class="posicao">${trofeu} ${posicao}º</td>
+            <td class="nome"><strong>${item.titulo}</strong></td>
+            <td class="pontuacao">${formatar(item.pontuacao)}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        atualizarHora();
+      } catch (err) {
+        console.error("Erro:", err);
+        document.querySelector('#tabelaRanking tbody').innerHTML = 
+          `<tr><td colspan="3" class="error">Erro: ${err.message}</td></tr>`;
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      carregarRanking();
+      setInterval(carregarRanking, 5000);
+    });
+  </script>
+</body>
+</html>

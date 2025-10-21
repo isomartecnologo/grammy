@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Jurado - Grammy 2025</title>
+  <style>
+    :root {
+      --bg-primary: linear-gradient(135deg, #0c1a3e, #1a2d64);
+      --bg-secondary: rgba(10, 15, 50, 0.9);
+      --text-color: #fff;
+      --input-bg: rgba(255, 255, 255, 0.1);
+      --input-border: rgba(255, 255, 255, 0.2);
+      --btn-gradient: linear-gradient(90deg, #00bfff, #0088cc);
+      --gold: gold;
+      --glow: rgba(255, 215, 0, 0.8);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Arial', sans-serif;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+      background-size: 20px 20px;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    body {
+      background: var(--bg-primary);
+      min-height: 100vh;
+      color: white;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1000px;
+      background: var(--bg-secondary);
+      border: 3px solid var(--gold);
+      border-radius: 20px;
+      box-shadow: 0 0 30px var(--glow);
+      padding: 40px 20px;
+      margin: 30px auto;
+    }
+
+    h1, h2, h3 {
+      text-align: center;
+      color: var(--gold);
+      text-shadow: 0 0 15px var(--glow);
+    }
+
+    .welcome {
+      text-align: center;
+      font-size: 1.3rem;
+      margin: 20px 0;
+      color: #ccc;
+    }
+
+    .form-group {
+      margin: 20px 0;
+    }
+
+    .form-group label {
+      display: block;
+      color: white;
+      margin-bottom: 8px;
+    }
+
+    select.form-control, input.form-control {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+      background: var(--input-bg);
+      color: white;
+    }
+	
+	select.form-control2, input.form-control2 {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid var(--input-border);
+      border-radius: 8px;
+      background: var(--input-bg);
+      color: green;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 30px 0;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    th {
+      background: rgba(0, 191, 255, 0.3);
+      color: var(--gold);
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 5px;
+    }
+
+    .btn-primary {
+      background: var(--btn-gradient);
+      color: white;
+    }
+
+    .btn-danger {
+      background: #e74c3c;
+      color: white;
+    }
+
+    .resultado {
+      margin: 20px 0;
+      padding: 15px;
+      background: rgba(46, 204, 113, 0.2);
+      border: 1px solid #27ae60;
+      border-radius: 8px;
+      color: #27ae60;
+      text-align: center;
+    }
+
+    .error {
+      color: #e74c3c;
+      text-align: center;
+    }
+
+    .info-box {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      border-left: 4px solid var(--gold);
+    }
+
+    /* Minhas avaliações */
+    .minhas-avaliacoes {
+      margin-top: 40px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+    }
+
+    .avaliacao-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      margin-bottom: 8px;
+      border-radius: 6px;
+    }
+
+    .avaliacao-info {
+      font-weight: bold;
+    }
+	
+	.botao {
+      display: inline-block;
+      padding: 10px 20px;
+      font-size: 16px;
+      color: white;
+      background-color: #007bff;
+      text-decoration: none;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+	
+	/* Botão centralizado abaixo */
+    .botao-centralizado {
+      display: block;
+      margin: 20px auto 0;
+      text-align: center;
+      width: fit-content;
+    }
+	
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>📝 Avaliação de Vídeos</h1>
+    <p class="welcome">Bem-vindo, jurado <strong id="nomeJurado">Carregando...</strong></p>
+
+    <button onclick="sair()" class="btn btn-danger">🚪 Sair</button>
+
+    <!-- Seleção de apresentação -->
+    <div class="form-group">
+      <label for="videoSelect">Selecione a apresentação para avaliar:</label>
+      <select id="videoSelect" class="form-control2">
+        <option value="">Selecione uma apresentação</option>
+      </select>
+    </div>
+
+    <!-- Informações da apresentação -->
+    <div id="infoApresentacao" style="display:none;">
+      <div class="info-box">
+        <h3 id="tituloVideo"></h3>
+        <p><strong>Criador:</strong> <span id="criadorVideo"></span></p>
+        <p><strong>Link:</strong> <a id="linkDrive" href="#" target="_blank" style="color:#00bfff;">Acessar Pasta no Google Drive</a></p>
+      </div>
+    </div>
+
+    <!-- Tabela de notas -->
+    <table id="tabelaNotas" style="display:none;">
+      <thead>
+        <tr>
+          <th>Categoria</th>
+          <th>Nota (0.0 a 10.0)</th>
+        </tr>
+      </thead>
+      <tbody id="tabela"></tbody>
+    </table>
+
+    <!-- Botão de salvar/excluir -->
+    <div style="text-align:center; margin: 30px 0;">
+      <button id="btnSalvar" class="btn btn-primary">💾 Salvar Avaliação</button>
+      <button id="btnExcluir" class="btn btn-danger" style="display:none;">🗑️ Excluir Avaliação</button>
+    </div>
+
+    <!-- Resultado -->
+    <div id="resultado" style="display:none;"></div>
+
+    <!-- Lista de avaliações já feitas -->
+    <div class="minhas-avaliacoes">
+      <h3>✅ Minhas Avaliações</h3>
+      <div id="listaAvaliacoesSalvas">
+        <p>Carregando suas avaliações...</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let usuarioAtual = null;
+    let apresentacoes = [];
+    let avaliacoesJurado = [];
+
+    // Carregar dados ao iniciar
+    window.addEventListener('DOMContentLoaded', async () => {
+      const stored = localStorage.getItem("usuarioAtual");
+      if (!stored) {
+        alert("Você precisa estar logado.");
+        window.location.href = "index.html";
+        return;
+      }
+
+      try {
+        usuarioAtual = JSON.parse(stored);
+        document.getElementById("nomeJurado").textContent = usuarioAtual.nome;
+
+        await carregarDados();
+      } catch (err) {
+        console.error("Erro ao carregar usuário:", err);
+        alert("Sessão inválida.");
+        window.location.href = "index.html";
+      }
+    });
+
+    async function carregarDados() {
+      try {
+        const res1 = await fetch('/grammy/api.php?acao=listar_apresentacoes');
+        apresentacoes = await res1.json();
+
+        const res2 = await fetch('/grammy/api.php?acao=listar_avaliacoes');
+        const todasAvaliacoes = await res2.json();
+
+        // Filtra avaliações do jurado logado
+        avaliacoesJurado = todasAvaliacoes.filter(av => av.jurado_nome === usuarioAtual.nome);
+
+        // Atualiza UI
+        atualizarListaApresentacoes();
+        exibirMinhasAvaliacoes();
+        resetarFormulario(); // Garante que comece vazio
+      } catch (err) {
+        console.error("Erro ao carregar dados:", err);
+        mostrarResultado("Erro ao carregar dados.", false);
+      }
+    }
+
+    function atualizarListaApresentacoes() {
+      const select = document.getElementById("videoSelect");
+      // Mantém apenas a opção inicial
+      select.innerHTML = '<option value="">Selecione uma apresentação</option>';
+
+      const pendentes = apresentacoes.filter(pasta =>
+        !avaliacoesJurado.some(av => av.apresentacao_id == pasta.id)
+      );
+
+      pendentes.forEach(pasta => {
+        const opt = document.createElement("option");
+        opt.value = pasta.id;
+        opt.textContent = pasta.titulo;
+        select.appendChild(opt);
+      });
+    }
+
+    function resetarFormulario() {
+      document.getElementById("infoApresentacao").style.display = "none";
+      document.getElementById("tabelaNotas").style.display = "none";
+      document.getElementById("btnExcluir").style.display = "none";
+      document.getElementById("btnSalvar").textContent = "💾 Salvar Avaliação";
+      document.getElementById("resultado").style.display = "none";
+    }
+
+    function mostrarResultado(mensagem, sucesso) {
+      const el = document.getElementById("resultado");
+      el.textContent = mensagem;
+      el.className = sucesso ? "resultado" : "error";
+      el.style.display = "block";
+    }
+
+    // Quando o jurado seleciona uma apresentação
+    document.getElementById("videoSelect").addEventListener("change", function () {
+      const id = this.value;
+      if (!id) {
+        resetarFormulario();
+        return;
+      }
+
+      const pasta = apresentacoes.find(p => p.id == id);
+      if (!pasta) return;
+
+      // Exibe informações da apresentação
+      document.getElementById("tituloVideo").textContent = pasta.titulo;
+      document.getElementById("criadorVideo").textContent = pasta.criador;
+      document.getElementById("linkDrive").href = pasta.url;
+      document.getElementById("infoApresentacao").style.display = "block";
+
+      // Preenche a tabela de notas
+      preencherTabelaNotas();
+
+      // Verifica se já foi avaliada
+      const avaliacaoExistente = avaliacoesJurado.find(av => av.apresentacao_id == id);
+
+      if (avaliacaoExistente) {
+        preencherNotasNaTabela(avaliacaoExistente);
+        document.getElementById("btnSalvar").textContent = "🔄 Atualizar Avaliação";
+        document.getElementById("btnExcluir").style.display = "inline-block";
+      } else {
+        limparNotasNaTabela();
+        document.getElementById("btnSalvar").textContent = "💾 Salvar Avaliação";
+        document.getElementById("btnExcluir").style.display = "none";
+      }
+
+      document.getElementById("tabelaNotas").style.display = "table";
+    });
+
+    function preencherTabelaNotas() {
+      const tabela = document.getElementById("tabela");
+      tabela.innerHTML = "";
+
+      const categorias = [
+        "Roteiro", "Produção", "Equipe de lipsinch/dublagem/karaokê", "Figurino",
+        "Sinergia música/filmagem", "Criatividade", "Coreografia/performance",
+        "Artistas-revelação (elenco/atuação)", "Caracterização de arte audiovisual"
+      ];
+
+      categorias.forEach(cat => {
+        const tr = document.createElement("tr");
+        const tdCat = document.createElement("td");
+        tdCat.textContent = cat;
+        tr.appendChild(tdCat);
+
+        const tdNota = document.createElement("td");
+        const select = document.createElement("select");
+
+        for (let n = 0; n <= 10; n += 0.5) {
+          const opt = document.createElement("option");
+          opt.value = n.toFixed(1);
+          opt.textContent = n.toFixed(1);
+          select.appendChild(opt);
+        }
+
+        tdNota.appendChild(select);
+        tr.appendChild(tdNota);
+        tabela.appendChild(tr);
+      });
+    }
+
+    function preencherNotasNaTabela(avaliacao) {
+      const selects = document.querySelectorAll("#tabela select");
+      const notasMap = {
+        "Roteiro": avaliacao.roteiro,
+        "Produção": avaliacao.producao,
+        "Equipe de lipsinch/dublagem/karaokê": avaliacao.lipsync,
+        "Figurino": avaliacao.figurino,
+        "Sinergia música/filmagem": avaliacao.sinergia,
+        "Criatividade": avaliacao.criatividade,
+        "Coreografia/performance": avaliacao.performance,
+        "Artistas-revelação (elenco/atuação)": avaliacao.revelacao,
+        "Caracterização de arte audiovisual": avaliacao.arte_audiovisual
+      };
+
+      selects.forEach(sel => {
+        const cat = sel.parentElement.parentElement.querySelector("td").textContent;
+        const valor = notasMap[cat];
+        if (valor !== undefined) {
+          sel.value = valor.toFixed(1);
+        }
+      });
+    }
+
+    function limparNotasNaTabela() {
+      const selects = document.querySelectorAll("#tabela select");
+      selects.forEach(sel => { sel.selectedIndex = 0; });
+    }
+
+    async function salvarAvaliacao() {
+      const id = document.getElementById("videoSelect").value;
+      if (!id) return alert("Selecione uma apresentação.");
+
+      const selects = document.querySelectorAll("#tabela select");
+      let soma = 0;
+      const notas = {};
+
+      for (const sel of selects) {
+        const valor = parseFloat(sel.value);
+        if (isNaN(valor)) return alert("Preencha todas as notas.");
+        soma += valor;
+        const cat = sel.parentElement.parentElement.querySelector("td").textContent;
+        notas[cat] = valor;
+      }
+
+      const media = (soma / selects.length).toFixed(2);
+
+      const response = await fetch('/grammy/api.php?acao=salvar_avaliacao', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: parseInt(id),
+          jurado: usuarioAtual.nome,
+          notas: notas
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.sucesso) {
+        mostrarResultado(`✅ ${result.sucesso} Média: ${media}`, true);
+        setTimeout(async () => {
+          await carregarDados();
+          resetarFormulario();
+        }, 1500);
+      } else {
+        mostrarResultado(`❌ Erro: ${result.erro}`, false);
+      }
+    }
+/*
+    async function excluirAvaliacao() {
+      const id = document.getElementById("videoSelect").value;
+      if (!id || !confirm("Tem certeza que deseja excluir sua avaliação?")) return;
+
+      const response = await fetch('api.php?acao=excluir_avaliacao', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          apresentacao_id: parseInt(id),
+          jurado_nome: usuarioAtual.nome
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.sucesso) {
+        mostrarResultado(result.sucesso, true);
+        setTimeout(async () => {
+          await carregarDados();
+          resetarFormulario();
+        }, 1500);
+      } else {
+        mostrarResultado(`❌ Erro: ${result.erro}`, false);
+      }
+    }
+
+*/
+/*
+//Adicionado 18-10 00h
+async function excluirAvaliacao() {
+  const id = document.getElementById("videoSelect").value;
+  if (!id) return alert("Nenhuma apresentação selecionada.");
+
+  if (!confirm("Tem certeza que deseja excluir sua avaliação?")) return;
+
+  try {
+    const response = await fetch('api.php?acao=excluir_avaliacao', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        apresentacao_id: parseInt(id),
+        jurado_nome: usuarioAtual.nome
+      })
+    });
+
+    const result = await response.json();
+
+    if (result.sucesso) {
+      mostrarResultado(result.mensagem || "✅ Avaliação excluída!", true);
+      setTimeout(async () => {
+        await carregarDados(); // Recarrega tudo
+        resetarFormulario();
+      }, 1500);
+    } else {
+      throw new Error(result.erro || "Falha desconhecida");
+    }
+  } catch (err) {
+    console.error("Erro ao excluir:", err);
+    mostrarResultado(`❌ Erro: ${err.message}`, false);
+  }
+}
+
+// Função para excluir pelo botão na lista
+async function excluirAvaliacaoPorItem(apresentacao_id) {
+  if (!confirm("Deseja excluir esta avaliação?")) return;
+  
+  // Simula seleção no select
+  document.getElementById("videoSelect").value = apresentacao_id;
+  await excluirAvaliacao();
+}
+//Termina aqui
+*/
+async function excluirAvaliacao() {
+  console.log("✅ Função excluirAvaliacao foi chamada");
+
+  const id = document.getElementById("videoSelect").value;
+  if (!id) {
+    console.log("❌ Nenhuma apresentação selecionada");
+    alert("Selecione uma apresentação.");
+    return;
+  }
+
+  if (!confirm("Tem certeza que deseja excluir sua avaliação?")) return;
+
+  // Verifica se o usuário está logado
+  if (!usuarioAtual || !usuarioAtual.nome) {
+    console.log("❌ Usuário não autenticado", usuarioAtual);
+    alert("Você precisa estar logado.");
+    window.location.href = "index.html";
+    return;
+  }
+
+  try {
+    console.log("📤 Enviando exclusão:", {
+      apresentacao_id: parseInt(id),
+      jurado_nome: usuarioAtual.nome
+    });
+
+    const response = await fetch('/grammy/api.php?acao=excluir_avaliacao', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        apresentacao_id: parseInt(id),
+        jurado_nome: usuarioAtual.nome
+      })
+    });
+
+    console.log("📨 Resposta recebida:", response.status);
+
+    const result = await response.json();
+    console.log("📊 Resultado:", result);
+
+    if (result.sucesso) {
+      mostrarResultado(result.mensagem || "✅ Excluído!", true);
+      setTimeout(async () => {
+        await carregarDados();
+        resetarFormulario();
+      }, 1500);
+    } else {
+      mostrarResultado(`❌ ${result.erro}`, false);
+    }
+  } catch (err) {
+    console.error("❌ ERRO NA REQUISIÇÃO:", err);
+    mostrarResultado(`Falha: ${err.message}`, false);
+  }
+}
+
+// Função para excluir diretamente pelo ID (sem depender do select)
+
+async function excluirAvaliacaoPorItem(apresentacao_id) {
+  if (!confirm("Tem certeza que deseja excluir sua avaliação?")) return;
+
+  try {
+    const formData = new FormData();
+    formData.append('apresentacao_id', apresentacao_id);
+    formData.append('jurado_nome', usuarioAtual.nome);
+
+    const response = await fetch('/grammy/api.php?acao=excluir_avaliacao', {
+      method: 'POST',
+      body: formData  // Sem headers (o navegador define automaticamente com boundary)
+    });
+
+    const result = await response.json();
+
+    if (result.sucesso) {
+      mostrarResultado("✅ Avaliação excluída com sucesso!", true);
+      setTimeout(async () => {
+        await carregarDados();   // Atualiza apresentações e avaliações
+        resetarFormulario();
+      }, 1500);
+    } else {
+      throw new Error(result.erro || "Falha desconhecida");
+    }
+  } catch (err) {
+    console.error("Erro ao excluir avaliação:", err);
+    mostrarResultado(`❌ Erro: ${err.message}`, false);
+  }
+}
+
+//Termina aqui
+
+	function exibirMinhasAvaliacoes() {
+  const container = document.getElementById("listaAvaliacoesSalvas");
+  container.innerHTML = '';
+
+  if (avaliacoesJurado.length === 0) {
+    container.innerHTML = '<p>Você ainda não realizou nenhuma avaliação.</p>';
+    return;
+  }
+
+  avaliacoesJurado.forEach(av => {
+    const div = document.createElement("div");
+    div.className = "avaliacao-item";
+    div.innerHTML = `
+      <div class="avaliacao-info">${av.apresentacao_titulo} (Média: ${av.media})</div>
+     <!-- <button class="btn btn-danger" onclick='excluirAvaliacaoPorItem(${av.apresentacao_id})'>🗑️ Excluir</button>  -->
+    `;
+    container.appendChild(div);
+  });
+}
+
+	
+
+
+<!--
+	// Permite excluir pelo item na lista
+	
+    async function excluirAvaliacaoPorItem(apresentacao_id) {
+      if (!confirm("Excluir esta avaliação?")) return;
+      document.getElementById("videoSelect").value = apresentacao_id;
+      await excluirAvaliacao();
+    }
+	-->
+	
+	// Funções dos botões
+    document.getElementById("btnSalvar").onclick = salvarAvaliacao;
+    document.getElementById("btnExcluir").onclick = excluirAvaliacao;
+
+
+
+
+   function sair() {
+      if (confirm("Deseja sair?")) {
+        localStorage.removeItem("usuarioAtual");
+        window.location.href = "index.html";
+      }
+    }
+	
+  </script>
+  
+  <!--<a href="minhas_avaliacoes.html" class="botao botao-centralizado">👁️ Excluir avaliações</a>   
+  -->
+</body>
+</html>

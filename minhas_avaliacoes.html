@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Minhas Avaliações</title>
+  <style>
+    :root {
+      --bg: linear-gradient(135deg, #0c1a3e, #1a2d64);
+      --card: rgba(255, 255, 255, 0.07);
+      --gold: gold;
+    }
+    body {
+      background: var(--bg);
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    h1 {
+      text-align: center;
+      color: var(--gold);
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+    .welcome {
+      text-align: center;
+      color: #ccc;
+      margin: 20px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    th, td {
+      padding: 14px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    th {
+      background: rgba(0, 191, 255, 0.3);
+      color: var(--gold);
+    }
+    tr:hover { background: rgba(255, 255, 255, 0.05); }
+    .btn-danger {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .btn-voltar {
+      display: inline-block;
+      background: #666;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      margin-bottom: 20px;
+    }
+    .resultado { padding: 15px; background: rgba(46, 204, 113, 0.2); border-radius: 8px; text-align: center; }
+    .error { padding: 15px; background: rgba(231, 76, 60, 0.2); border-radius: 8px; text-align: center; color: #e74c3c; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>📝 Minhas Avaliações</h1>
+    <p class="welcome">Jurado: <strong id="nomeJurado">Carregando...</strong></p>
+
+    <a href="jurado.html" class="btn-voltar">← Voltar</a>
+
+    <div id="mensagem"></div>
+
+    <table id="tabelaAvaliacoes">
+      <thead>
+        <tr>
+          <th>Vídeo</th>
+          <th>Média</th>
+          <th>Data</th>
+          <th>Ação</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="4" style="text-align:center;">Carregando...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const usuarioAtual = JSON.parse(localStorage.getItem("usuarioAtual"));
+
+    if (!usuarioAtual || usuarioAtual.tipo !== "jurado") {
+      alert("Acesso negado.");
+      window.location.href = "index.html";
+    }
+
+    document.getElementById("nomeJurado").textContent = usuarioAtual.nome;
+
+    async function carregarAvaliacoes() {
+      try {
+        const res = await fetch('/grammy/api.php?acao=listar_avaliacoes');
+        const todas = await res.json();
+        
+        // Filtra apenas as do jurado logado
+        const minhas = todas.filter(av => av.jurado_nome === usuarioAtual.nome);
+
+        const tbody = document.querySelector("#tabelaAvaliacoes tbody");
+        tbody.innerHTML = '';
+
+        if (minhas.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">Você ainda não avaliou nenhum vídeo.</td></tr>`;
+          return;
+        }
+
+        minhas.forEach(av => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${av.apresentacao_titulo}</td>
+            <td><strong>${av.media}</strong></td>
+            <td>${new Date(av.data_avaliacao).toLocaleString()}</td>
+            <td>
+              <button class="btn-danger" onclick='excluir(${av.apresentacao_id})'>🗑️ Excluir</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error(err);
+        document.getElementById("mensagem").innerHTML = 
+          `<div class="error">Erro ao carregar avaliações.</div>`;
+      }
+    }
+
+    async function excluir(apresentacao_id) {
+      if (!confirm("Excluir esta avaliação?")) return;
+
+      const formData = new FormData();
+      formData.append('apresentacao_id', apresentacao_id);
+      formData.append('jurado_nome', usuarioAtual.nome);
+
+      try {
+        const res = await fetch('/grammy/api.php?acao=excluir_avaliacao', {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await res.json();
+
+        if (result.sucesso) {
+          document.getElementById("mensagem").innerHTML = 
+            `<div class="resultado">✅ Avaliação excluída!</div>`;
+          setTimeout(carregarAvaliacoes, 1500);
+        } else {
+          throw new Error(result.erro);
+        }
+      } catch (err) {
+        document.getElementById("mensagem").innerHTML = 
+          `<div class="error">❌ Erro: ${err.message}</div>`;
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', carregarAvaliacoes);
+  </script>
+</body>
+</html>

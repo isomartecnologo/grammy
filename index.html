@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Grammy Awards 2025 - Login</title>
+  <style>
+    :root {
+      --bg-primary: linear-gradient(135deg, #0c1a3e, #1a2d64);
+      --bg-secondary: rgba(10, 15, 50, 0.9);
+      --form-bg: rgba(15, 20, 60, 0.8);
+      --text-color: #fff;
+      --input-bg: rgba(255, 255, 255, 0.1);
+      --input-border: rgba(255, 255, 255, 0.2);
+      --input-focus: #00bfff;
+      --btn-gradient: linear-gradient(90deg, #00bfff, #0088cc);
+      --btn-hover: linear-gradient(90deg, #0088cc, #006699);
+      --gold: gold;
+      --glow: rgba(255, 215, 0, 0.8);
+      --shadow: rgba(0, 0, 0, 0.5);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: linear-gradient(135deg, #f0f5ff, #e0eaf8);
+      --bg-secondary: rgba(255, 255, 255, 0.9);
+      --form-bg: rgba(240, 245, 255, 0.8);
+      --text-color: #222;
+      --input-bg: rgba(0, 0, 0, 0.05);
+      --input-border: rgba(0, 0, 0, 0.2);
+      --input-focus: #007bff;
+      --btn-gradient: linear-gradient(90deg, #007bff, #0056b3);
+      --btn-hover: linear-gradient(90deg, #0056b3, #004085);
+      --gold: #b8860b;
+      --glow: rgba(184, 134, 11, 0.6);
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Arial', sans-serif;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+      background-size: 20px 20px;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    body {
+      background: var(--bg-primary);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      transition: background 0.5s ease;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 500px;
+      background: var(--bg-secondary);
+      border: 3px solid var(--gold);
+      border-radius: 20px;
+      box-shadow: 0 0 30px var(--glow), inset 0 0 20px var(--shadow);
+      padding: 40px 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .logo {
+      font-size: 4rem;
+      color: var(--gold);
+      text-shadow: 0 0 15px var(--glow);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .header h1 {
+      font-size: 3rem;
+      color: var(--gold);
+      text-shadow: 0 0 15px var(--glow);
+      letter-spacing: 2px;
+      margin: 10px 0;
+    }
+
+    .header span {
+      font-size: 1.2rem;
+    }
+
+    .form-group {
+      margin: 20px 0;
+    }
+
+    .form-group label {
+      display: block;
+      text-align: left;
+      color: var(--text-color);
+      margin-bottom: 8px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+      background: var(--input-bg);
+      color: var(--text-blak);
+    }
+
+    select.form-control {
+      cursor: pointer;
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 14px;
+      background: var(--btn-gradient);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .btn-login:hover {
+      background: var(--btn-hover);
+    }
+
+    .message {
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 15px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .message.show {
+      opacity: 1;
+    }
+
+    .message.error { background: #ff4d4d; color: rgb(255, 255, 255); }
+    .message.success { background: #4caf50; color: white; }
+
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+    }
+
+    .theme-toggle i {
+      color: var(--gold);
+      font-size: 1.5rem;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+ <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+ <div class="container">
+	 <div class="logo"><i class="fas fa-award"></i></div>
+	<div class="header">
+      <h1>THE GRAMMY</h1>
+      <h1>AWARDS 2025</h1>
+      <span>Login do Sistema</span>
+    </div>
+    
+	<div class="form-group">
+	<input type="text" id="nome_login" class="form-control" placeholder="Seu login (ex: JoaoSilva)" />
+	</div>
+  <input type="password" id="senha" class="form-control" placeholder="Sua senha" />
+ 
+  <button onclick="entrar()" class="btn-login">Entrar</button>
+  </div>
+  </div>
+  <p id="msg" class="error"></p>
+	
+	<!--
+	<form action="validar_login.php" method="POST">
+      <div class="form-group">
+        <label>Usuário</label>
+        <input type="text" name="nome_login" class="form-control" placeholder="Digite seu usuário" required />
+      </div>
+      <div class="form-group">
+        <label>Senha</label>
+        <input type="password" name="senha" class="form-control" placeholder="Digite sua senha" required />
+      </div>
+      <button class="btn-login"><i class="fas fa-sign-in-alt type="submit"></i>Entrar</button>
+    </form>
+  </div>
+	
+	
+    <div id="message" class="message"></div>
+  </div>
+ -->
+ 
+ <!--
+  <h1>🔐 Login - Grammy 2025</h1>
+  <input type="text" id="nome_login" placeholder="Seu login (ex: EduardoAzevedo)" />
+  <input type="password" id="senha" placeholder="Sua senha" />
+  <button onclick="entrar()" class="btn">Entrar</button>
+  <p id="msg" class="error"></p>
+-->
+   <script>
+    async function entrar() {
+  const nome_login = document.getElementById("nome_login").value.trim();
+  const senha = document.getElementById("senha").value.trim();
+  const msg = document.getElementById("msg");
+  msg.textContent = "";
+
+  if (!nome_login || !senha) {
+    msg.textContent = "Preencha todos os campos.";
+    return;
+  }
+
+  try {
+    // ✅ Envia para validar_login.php, NÃO para api.php
+    const response = await fetch('validar_login.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome_login, senha })
+    });
+
+    const result = await response.json();
+
+    if (result.sucesso) {
+      localStorage.setItem("usuarioAtual", JSON.stringify(result.usuario));
+      
+      if (result.usuario.tipo === "gerente") {
+        window.location.href = "gerente.html";
+      } else {
+        window.location.href = "jurado.html";
+      }
+    } else {
+      msg.textContent = result.erro; // Exibe "Login ou senha inválidos"
+    }
+  } catch (err) {
+    console.error("Erro:", err);
+    msg.textContent = "Falha na conexão com o servidor.";
+  }
+}
+
+    function verLocalStorage() {
+      const user = localStorage.getItem("usuarioAtual");
+      alert(user ? user : "Nenhum usuário logado.");
+    }
+  </script>
+</body>
+</html>
